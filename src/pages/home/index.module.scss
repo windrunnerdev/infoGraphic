@@ -1,0 +1,113 @@
+.layout {
+  padding: 3rem;
+  max-width: 156rem;
+  margin: 0 auto;
+}
+
+.title {
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+  font-size: 4rem;
+}
+
+.grid {
+  display: flex;
+  align-items: flex-start;
+}
+
+.aside {
+  flex: 0 1 52rem;
+  margin-right: 5rem;
+  border-top: 0.1rem solid grey;
+  padding-top: 3rem;
+}
+
+.year {
+  display: flex;
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+  border-bottom: 0.1rem solid grey;
+
+  &:first-of-type {
+    padding-top: 0;
+  }
+
+  &:last-of-type {
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+
+  &__date {
+    margin-right: 3rem;
+    font-size: 3.5rem;
+    font-weight: bold;
+  }
+
+  &__content {
+    line-height: 1.4;
+
+    & > div {
+      padding: 2.5rem;
+      border: 0.1rem solid #000;
+      margin-bottom: 3rem;
+
+      p {
+        margin-bottom: 1.5rem;
+
+        &:last-of-type {
+          margin-bottom: 0;
+        }
+      }
+    }
+
+    & > img {
+      margin-bottom: 2rem;
+      filter: grayscale(1);
+    }
+
+    & > p {
+      font-size: 1.6rem;
+      margin-bottom: 2rem;
+
+      &:last-of-type {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+.chart {
+  flex: 1 1 auto;
+  position: sticky;
+  top: 0;
+  padding-top: 3rem;
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  grid-gap: 3rem;
+  margin-bottom: 4rem;
+
+  &__left,
+  &__right {
+    display: flex;
+    flex-direction: column;
+    grid-gap: 0.7rem;
+
+    span:nth-child(1) {
+      font-size: 1.7rem;
+      color: grey;
+      text-transform: uppercase;
+    }
+
+    span:nth-child(2) {
+      font-size: 3rem;
+      font-weight: 600;
+    }
+  }
+
+  &__right {
+    text-align: right;
+  }
+}
