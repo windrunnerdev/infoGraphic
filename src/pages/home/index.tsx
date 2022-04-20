@@ -60,7 +60,7 @@ export const Home: React.FunctionComponent = () => {
   useLayoutEffect(() => {
     const scrollContainer = document.querySelector('#container');
     const scrollTween = gsap.to('#mask', {
-      left: '90%',
+      right: '90%',
       ease: 'none',
     });
     const verticalScroll = ScrollTrigger.create({
