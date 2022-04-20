@@ -1,18 +1,17 @@
-import { useLayoutEffect, useRef, useState } from 'react';
-import { take } from 'lodash-es';
-import { data as initialData } from './data';
+import { useEffect, useLayoutEffect, useRef } from 'react';
+import { data } from './data';
 import * as am4core from '@amcharts/amcharts4/core';
 import * as am4charts from '@amcharts/amcharts4/charts';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { Draggable } from 'gsap/Draggable';
 
 import classes from './index.module.scss';
 import { contents } from './contents';
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, Draggable);
 
 export const Home: React.FunctionComponent = () => {
-  const [data, setData] = useState(take(initialData, 2));
   const chart = useRef();
 
   useLayoutEffect(() => {
@@ -56,29 +55,70 @@ export const Home: React.FunctionComponent = () => {
     return () => {
       x.dispose();
     };
-  }, [data]);
+  }, []);
 
   useLayoutEffect(() => {
-    initialData.forEach((_, idx) => {
-      ScrollTrigger.create({
-        trigger: `#box_${idx}`,
-        scrub: 1,
-        onEnter: () => {
-          setData(take(initialData, idx + 1));
-        },
-        onEnterBack: () => {
-          setData(take(initialData, !idx ? idx + 2 : idx + 1));
-        },
-      });
+    const scrollContainer = document.querySelector('#container');
+    const scrollTween = gsap.to('#mask', {
+      left: '90%',
+      ease: 'none',
     });
+    const verticalScroll = ScrollTrigger.create({
+      animation: scrollTween,
+      trigger: scrollContainer,
+      scrub: true,
+      start: 'top top',
+      end: 'bottom bottom',
+      invalidateOnRefresh: true,
+    });
+
+    Draggable.create('#mask', {
+      type: 'x',
+      bounds: '#chart-ghost',
+      edgeResistance: 0.9,
+      onPress() {
+        this.startScroll = verticalScroll.scroll();
+      },
+      onDrag(x) {
+        const contentBoxHeight = document.querySelector('#box')?.clientHeight!;
+        console.log('==>contentBox ==>', contentBoxHeight);
+
+        const chartBoxWidth =
+          document.querySelector('#chart-ghost')?.clientWidth!;
+        console.log('==> chartBoxWidth ==>', chartBoxWidth);
+
+        const distance = this.endX - this.startX;
+        console.log('==> distance ==>', distance);
+
+        const verticalScrollAmount =
+          (contentBoxHeight * distance) / chartBoxWidth;
+        console.log('==> verticalScrollAmount ==>', verticalScrollAmount);
+
+        verticalScroll.scroll(this.startScroll + verticalScrollAmount * 20);
+      },
+    });
+    // const scrollContainer = document.querySelector('#container')!;
+    // gsap.to('#mask', {
+    //   scrollTrigger: {
+    //     trigger: scrollContainer,
+    //     scrub: true,
+    //     start: 'top top',
+    //     // end: 'bottom bottom',
+    //     // @ts-ignore
+    //     end: () => '+=' + scrollContainer.offsetHeight!,
+    //     invalidateOnRefresh: true,
+    //   },
+    //   left: '90%',
+    //   ease: 'none',
+    // });
   }, []);
   return (
     <main className={classes.layout}>
       <h1 className={classes.title}>The network and the policy</h1>
       <div className={classes.grid}>
-        <aside className={classes.aside}>
+        <aside className={classes.aside} id='container'>
           {contents.map((cn, idx) => (
-            <div key={cn.year} className={classes.year} id={`box_${idx}`}>
+            <div key={cn.year} className={classes.year} id='box'>
               <div className={classes.year__date}>{cn.year}</div>
               <div className={classes.year__content}>
                 <div>
@@ -102,7 +142,11 @@ export const Home: React.FunctionComponent = () => {
               <span>432,000 km</span>
             </div>
           </div>
-          <div id='chartdiv' style={{ width: '100%', height: '500px' }} />
+          <div style={{ width: '100%', height: '500px', position: 'relative' }}>
+            <div className={classes['chart-ghost']} id='chart-ghost' />
+            <div className={classes['chart-mask']} id='mask'></div>
+            <div id='chartdiv' style={{ width: '100%', height: '500px' }} />
+          </div>
         </section>
       </div>
     </main>
